@@ -20,6 +20,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
+  int pushNumberId = 0;
 
   NotificationsBloc() : super(NotificationsState()) {
     on<NotificationStatusChanged>(_notificationStatusChanged);
@@ -88,6 +89,12 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
           : message.notification!.apple?.imageUrl,
     );
 
+    LocalNotifications.showLocalNotifications(
+      id: ++pushNumberId,
+      body: notification.body,
+      data: notification.data.toString(),
+      title: notification.title,
+    );
     add(NotificationReceived(notification));
   }
 
@@ -107,7 +114,7 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
     );
 
     // solicitar permiso a las local notifications
-    await requestPermissionLocalNotification();
+    await LocalNotifications.requestPermissionLocalNotification();
 
     add(NotificationStatusChanged(settings.authorizationStatus));
   }
