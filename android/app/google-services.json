@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "548682257246",
+    "project_id": "flutter-projects-7607a",
+    "storage_bucket": "flutter-projects-7607a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:548682257246:android:f8d394351115331799f5cf",
+        "android_client_info": {
+          "package_name": "com.marcelofuentes.push_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2wN9Y3MTKvYDfgVgc-UaiwwjLhOkF8r8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
