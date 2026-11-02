@@ -7,11 +7,22 @@ import 'package:push_app/firebase_options.dart';
 part 'notifications_event.dart';
 part 'notifications_state.dart';
 
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+
+  print('handling a background meessage: ${message.messageId}');
+}
+
 class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
   NotificationsBloc() : super(NotificationsState()) {
     on<NotificationStatusChanged>(_notificationStatusChanged);
+    // verificar estado de las notificaciones
+    _initialStatusCheck();
+    // listener para notificaciones en foreground
+    _onForegroundMessage();
   }
 
   static Future<void> initializeFCM() async {
@@ -25,6 +36,35 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
     Emitter<NotificationsState> emit,
   ) {
     emit(state.copyWith(status: event.status));
+    _getFCMToken();
+  }
+
+  void _initialStatusCheck() async {
+    final settings = await messaging.getNotificationSettings();
+    add(NotificationStatusChanged(settings.authorizationStatus));
+  }
+
+  void _getFCMToken() async {
+    if (state.status != AuthorizationStatus.authorized) return;
+
+    // final token = await messaging.getToken();
+    // print('${token}');
+
+    final registered = messaging.onRegistered.first; // suscribirse antes
+    await messaging.register();
+    final fid = await registered;
+    print(fid);
+  }
+
+  void _handleRemoteMessage(RemoteMessage message) {
+    print('message data: ${message.data}');
+    if (message.notification == null) return;
+
+    print('message also contained a notification: ${message.notification}');
+  }
+
+  void _onForegroundMessage() {
+    FirebaseMessaging.onMessage.listen(_handleRemoteMessage);
   }
 
   void requestPermission() async {
